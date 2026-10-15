@@ -24,5 +24,8 @@ internal class Z1346OccultCrescentNorthHorn : NavmeshCustomization
 		LinkPoints(mesh, new(-833.534f, 97.623f, 553.106f), new(-912.932f, 157.793f, 630.335f));
 		// island down (W)
 		LinkPoints(mesh, new(-900.858f, 157.8f, 629.249f), new(-823.331f, 94.5f, 543.053f));
+
+		// sinking sanctuary chest tower to ground
+		LinkPoints(mesh, new(289.216f, 143, -366.471f), new(326.546f, 10.368f, -411.02f), Navmesh.AreaId.Shortcut);
 	}
 }
