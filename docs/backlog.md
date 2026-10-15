@@ -123,6 +123,14 @@ they were sampled by picking random walkable polygons, which happily picks the
 inside of a building and a hilltop across the zone. But the ones that do come up
 in play cost the same flood.
 
+**Two failures look the same from the outside, and only one is this one.** A search
+that runs to its budget and returns a partial path is either asking about two
+different components, which is this item, or asking about a route that exists but
+needs more expansions than any budget allows, such as the way out of an
+underground settlement. ADR 0010 handles the second class by following the
+walking mesh when it knows the route. Component labelling would still be the
+answer for the first, and would also tell the two apart.
+
 **Directions worth trying.** Label components once and check before searching.
 `VoxelMap.Tile.Contents` already carries a TODO for exactly this ("region id in
 low bits") and has 15 spare bits per empty voxel, and the mesh side already does
@@ -138,3 +146,30 @@ algorithm, and labelling in place would not need one.
 runs to the search budget and returns a path whose last point is not near the
 requested destination. Counting those over a set of sampled pairs is what the
 table above is built from.
+
+---
+
+## 4. Raw volume hops clip corners the line of sight check would reject
+
+**Symptom.** A straightened flying path can contain a hop that
+`VoxelSearch.LineOfSight` says passes through geometry. Measured on 60 random
+walkable pairs per zone with the ADR 0008 defaults: 27 of 48 successful routes in
+Mare Lamentorum and 25 of 42 in Yak T'el had at least one such hop.
+
+**Why it happens.** `VoxelStringPull.Simplify` never tests the hop to the immediate
+next point, on the grounds that the search got there. But the search moves between
+face-adjacent voxels, and a node's position is the point of its voxel closest to the
+parent's position, which sits on a face or an edge. The straight line between two
+such points can clip a third voxel at a corner, and that voxel can be solid. The
+search never looked at it because it never entered it.
+
+**What it costs.** The character passes within a fraction of a yalm of a solid
+corner. On its own this reads as brushing geometry rather than flying into it,
+which is probably why it has not been noticed, but it means "no hop passes through
+geometry" is not something the straightening can promise on real zones, only on
+the synthetic worlds in the tests.
+
+**Directions worth trying.** Pull node positions in from the face by a small
+margin, or make `Simplify` test every hop and, when a raw hop fails, insert the
+voxel centre as an extra point.
+
