@@ -40,7 +40,7 @@ upstream until a switch is flipped.
 
 ## Consequences
 
-- `git merge upstream/master` conflicts are confined to a handful of short, well-known
+- Conflicts when bringing in upstream (by rebase since ADR 0011) are confined to a handful of short, well-known
   hunks rather than spread through the movement code.
 - The set of upstream files this fork touches is small enough to enumerate, and that
   enumeration is itself a review checklist after every merge:
