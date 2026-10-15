@@ -150,6 +150,11 @@ public class RecorderTab
         if (ImGui.IsItemHovered())
             ImGui.SetTooltip("Only affects flying routes. Walking goes through Detour and is already fast.");
 
+        if (ImGui.Checkbox("Follow the walking mesh when the search falls short", ref cfg.VolumeMeshFallback))
+            Service.Config.NotifyModified();
+        if (ImGui.IsItemHovered())
+            ImGui.SetTooltip("Off is upstream: a flying route the search cannot finish stops short and then heads straight for the goal, usually into a wall. On, the walking mesh is asked for a route and the flight follows it leg by leg. Only runs when the plain search has already failed.");
+
         using var _ = ImRaii.Disabled(!cfg.VolumeTuningEnabled);
 
         ImGui.SetNextItemWidth(200);

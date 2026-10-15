@@ -224,6 +224,16 @@ public class NavmeshQuery
 		}
 		Service.Log.Debug($"Pathfind took {timer.Value().TotalSeconds:f3}s: {string.Join(", ", voxelPath.Select(r => $"{r.p} {r.voxel:X}"))}");
 
+		// fork, see ADR 0010: a search that ran out of budget stops short, and the path then aims straight at the goal
+		if (voxelPath[^1].voxel != endVoxel && Service.Config.Humanizer.VolumeMeshFallback)
+		{
+			var corners = Movement.Human.MeshCorridor.Corners(MeshQuery, _pathFilter, VolumeQuery, from, to, useRaycast, cancel);
+			var corridor = corners != null ? VoxelCorridor.Follow(VolumeQuery, (startVoxel, from), (endVoxel, to), corners, useRaycast, cancel, avoidCenter, avoidRadius) : null;
+			Service.Log.Info($"[pathfind] volume search stopped {Vector3.Distance(voxelPath[^1].p, to):f0}y short of the goal; walking mesh {(corners == null ? "has no route" : $"gave {corners.Count} corners")}, corridor {(corridor == null ? "could not be followed" : $"has {corridor.Count} points")}, {timer.Value().TotalSeconds:f3}s so far");
+			if (corridor != null)
+				voxelPath = corridor;
+		}
+
 		if (useStringPulling)
 		{
 			var straightened = VoxelStringPull.Simplify(VolumeQuery.Volume, voxelPath);
