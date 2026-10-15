@@ -17,6 +17,9 @@ What is here so far:
   and cuts the worst case from about thirteen seconds to under one
 - a chat echo for pathfinding, which says what is being searched for and how long it took,
   printed locally so nobody else sees it
+- a fallback for flying routes the volume search cannot finish, such as the way out of an
+  underground settlement: the walking mesh is asked for the route and the flight follows it,
+  instead of stopping short and heading straight at the goal through the rock
 
 Everything the fork adds is off by default, and it is a drop-in replacement: same internal
 name, same IPC, so other plugins see it as vnavmesh. That also means it cannot be installed

@@ -70,6 +70,13 @@ public class HumanizerConfig
     // budget that still found every route upstream found across the three zones measured
     public int VolumeMaxSteps = 200000;
 
+    // --- mesh-guided fallback (ADR 0010) ---
+
+    // when the volume search runs out of budget short of the goal, ask the walking mesh for a route
+    // and follow it through the volume leg by leg. off is upstream, which hands the short path back
+    // as it is, and the last waypoint then points straight at the goal through whatever is in the way
+    public bool VolumeMeshFallback = false;
+
     // --- pathfind chat (ADR 0009) ---
 
     // echo the start and the end of every pathfind into the chat log. off is upstream, which says
